@@ -180,7 +180,7 @@ def get_authoring_judge(list, judge_list):
 
             # First, check for of omitted words, avoiding false positive concur / dissents
             # Also check for concur or dissent up front to cut processing
-            if lines_passed > 2 and (('concur' or 'dissent') in line) and ('filed' not in line) \
+            if lines_passed > 5 and (('concur' or 'dissent') in line) and ('filed' not in line) \
                     and (' see ' not in line) and (' at ' not in line) and ('noting ' not in line) \
                     and (' he ' not in line):
 
@@ -209,10 +209,8 @@ def get_authoring_judge(list, judge_list):
                         match_line = line
                         break
 
-        # Now, get concurrence / dissent text
+        # Break loop once author determined
         if progress == 'CONCUR DISSENT TEXT':
-
-            # Skip concur dissent text
             break
 
     # Create output list
@@ -222,9 +220,68 @@ def get_authoring_judge(list, judge_list):
     if judge_found:
         return output_list
 
-    # Error message if authoring judge not found
-    else:
-        return [['ERROR - AUTHORING JUDGE'], '']
+    # Loop text again if no judge name found and default per curiam used
+    output.append('per curiam (default)')
+    progress = 'START'
+
+    # Second Loop - follow this if no judge determined. Assumes per curiam, but notes this is the default method
+    for line in list:
+
+        # First, find line with all panel judges
+        if progress == 'START':
+            if all(judge in line for judge in judge_list):
+                progress = 'AUTHOR'
+                continue
+
+            for judge in judge_list:
+                if judge in line:
+                    judges_seen.append(judge)
+
+            if all(judge in judges_seen for judge in judge_list):
+                progress = 'AUTHOR'
+                continue
+
+        # Immediately look for concur / dissent
+        if progress == 'AUTHOR':
+
+            # Skip some lines to ensure you don't catch a concur / dissent too early
+            lines_passed += 1
+            if lines_passed > 10 and (('concur' or 'dissent') in line) and ('filed' not in line) \
+                    and (' see ' not in line) and (' at ' not in line) and ('noting ' not in line) \
+                    and (' he ' not in line):
+
+                # Loop each judge's name in each line
+                for judge in judge_list:
+
+                    # Check if judge name + concur / dissent in a line to suggest concurrence / dissent
+                    if (judge in line) and ('dissent' in line) and ('concur' in line) and (judge != author_judge):
+                        progress = 'CONCUR DISSENT TEXT'
+                        output.append(judge)
+                        output.append('concur & dissent')
+                        match_line = line
+                        break
+
+                    if (judge in line) and ('dissent' in line) and (judge != author_judge):
+                        progress = 'CONCUR DISSENT TEXT'
+                        output.append(judge)
+                        output.append('dissent')
+                        match_line = line
+                        break
+
+                    if (judge in line) and ('concur' in line) and (judge != author_judge):
+                        progress = 'CONCUR DISSENT TEXT'
+                        output.append(judge)
+                        output.append('concur')
+                        match_line = line
+                        break
+
+        # Break loop once author determined
+        if progress == 'CONCUR DISSENT TEXT':
+            break
+
+    # Create output list
+    output_list = [output, match_line]
+    return output_list
 
 
 # TODO: Get Authoring Judge from HTML
@@ -365,7 +422,7 @@ def split_text(match_line, csv_text_list, judge_names):
             continue
 
         # Check if match line in current line
-        if (corrected_line in corrected_match_line) and (opinion_type in corrected_match_line):
+        if (corrected_line in corrected_match_line) and (opinion_type in corrected_line):
 
             # Set tracker, append text
             concur_dissent_list.append(line)
@@ -383,7 +440,8 @@ def split_text(match_line, csv_text_list, judge_names):
         concur_dissent_text = concur_dissent_text + line + '\n'
 
     # Error text if the concur / dissent text not picked up
-    if concur_dissent_text == '':
+    if opinion_text == '':
+        opinion_text = concur_dissent_text
         concur_dissent_text = 'ERROR - CONCUR DISSENT TEXT NOT FOUND.'
 
     # Output list
