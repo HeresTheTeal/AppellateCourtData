@@ -60,6 +60,11 @@ ws.column_dimensions['K'].width = 45        # corrected match line
 # For CSV reading later, expand max size
 csv.field_size_limit(sys.maxsize)
 
+# Set up CSV file
+csv_file = open('Appellate Data ' + str(datetime.now().strftime("%d-%m-%Y %H-%M-%S")) + '.csv', 'w', newline='')
+csv_writer = csv.writer(csv_file)
+csv_writer.writerow(header_row)
+
 
 # TODO: Get text of each case
 # Function to fetch the plain text from each json file
@@ -556,11 +561,13 @@ for circuit in os.listdir(json_directory):
                     # Create clean new row
                     clean_new_row.append(new_string)
 
-                # Add new row to spreadsheet
+                # Add new row to spreadsheets
                 ws.append(clean_new_row)
+                csv_writer.writerow(new_row)
 
 
 # TODO: Save and exit
+csv_file.close()
 wb.save('Appellate PLUS TEXT - ' + str(datetime.now().strftime("%m-%d-%Y %H-%M-%S")) + '.xlsx')
 print('* Complete. File saved. *')
 print('Runtime: ' + str(datetime.now() - startTime))
