@@ -182,7 +182,7 @@ def get_authoring_judge(list, judge_list):
             # Also check for concur or dissent up front to cut processing
             if lines_passed > 5 and (('concur' or 'dissent') in line) and ('filed' not in line) \
                     and (' see ' not in line) and (' at ' not in line) and ('noting ' not in line) \
-                    and (' he ' not in line):
+                    and (' he ' not in line) and len(line) < 250:
 
                 # Loop each judge's name in each line
                 for judge in judge_list:
@@ -248,7 +248,7 @@ def get_authoring_judge(list, judge_list):
             lines_passed += 1
             if lines_passed > 10 and (('concur' or 'dissent') in line) and ('filed' not in line) \
                     and (' see ' not in line) and (' at ' not in line) and ('noting ' not in line) \
-                    and (' he ' not in line):
+                    and (' he ' not in line) and len(line) < 250:
 
                 # Loop each judge's name in each line
                 for judge in judge_list:
