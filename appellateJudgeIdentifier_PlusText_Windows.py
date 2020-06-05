@@ -69,7 +69,8 @@ while True:
         maxInt = int(maxInt/10)
 
 # Set up CSV file
-csv_file = open('Appellate Data ' + str(datetime.now().strftime("%d-%m-%Y %H-%M-%S")) + '.csv', 'w', newline='')
+csv_file = open('Appellate Data ' + str(datetime.now().strftime("%d-%m-%Y %H-%M-%S")) + '.csv', 'w',
+                newline='', encoding='utf-8')
 csv_writer = csv.writer(csv_file)
 csv_writer.writerow(header_row)
 
