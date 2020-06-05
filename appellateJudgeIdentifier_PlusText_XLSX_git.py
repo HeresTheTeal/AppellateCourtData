@@ -16,7 +16,7 @@ import re
 # CSV Directory > (12 different files) ca##DataForSTM.csv
 # NOTE: For now, linking to sample folder
 json_directory = '/Users/Andrew/Library/Mobile Documents/com~apple~CloudDocs/UVA/' \
-                 'Summer 2020/Code/Python Appellate Data/Error Files'
+                 'Summer 2020/Data/Appellate Data/SAMPLE_FOLDER'
 csv_directory = '/Users/Andrew/Library/Mobile Documents/com~apple~CloudDocs/' \
                 'UVA/Summer 2020/Data/Appellate Data/Bias Paper Processed Data/stmCSV'
 
@@ -567,7 +567,7 @@ for circuit in os.listdir(json_directory):
 
 
 # TODO: Save and exit
-csv_file.close()
-wb.save('Appellate PLUS TEXT - ' + str(datetime.now().strftime("%m-%d-%Y %H-%M-%S")) + '.xlsx')
 print('* Complete. File saved. *')
 print('Runtime: ' + str(datetime.now() - startTime))
+wb.save('Appellate PLUS TEXT - ' + str(datetime.now().strftime("%m-%d-%Y %H-%M-%S")) + '.xlsx')
+csv_file.close()
