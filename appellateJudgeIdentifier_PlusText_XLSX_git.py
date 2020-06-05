@@ -457,6 +457,7 @@ def split_text(match_line, csv_text_list, judge_names):
 # TODO: Actually process
 # Create index for each row of spreadsheet
 index = 1
+total_files = 0
 
 for circuit in os.listdir(json_directory):
 
@@ -488,6 +489,9 @@ for circuit in os.listdir(json_directory):
 
             # Check if file is in csv
             if file in csv_json_files:
+
+                # Total progress counter
+                total_files += 1
 
                 # Print progress
                 progress_number += 1
@@ -567,7 +571,15 @@ for circuit in os.listdir(json_directory):
 
 
 # TODO: Save and exit
-print('* Complete. File saved. *')
-print('Runtime: ' + str(datetime.now() - startTime))
+# Save
 wb.save('Appellate PLUS TEXT - ' + str(datetime.now().strftime("%m-%d-%Y %H-%M-%S")) + '.xlsx')
-csv_file.close()
+
+# Final message
+print('* Complete. File saved. *')
+
+# Runtime and per-unit
+runtime = datetime.now() - startTime
+total_seconds = runtime.total_seconds()
+seconds_per_file = total_seconds / total_files
+print('Runtime: ' + str(runtime))
+print('Runtime, seconds per file: ' + str(seconds_per_file))
