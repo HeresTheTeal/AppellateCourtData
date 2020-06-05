@@ -15,10 +15,15 @@ import re
 # JSON Directory > (12 different folders) CA# > individual json files
 # CSV Directory > (12 different files) ca##DataForSTM.csv
 # NOTE: For now, linking to sample folder
+<<<<<<< Updated upstream
 json_directory = '/Users/Andrew/Library/Mobile Documents/com~apple~CloudDocs/UVA/' \
                  'Summer 2020/Code/Python Appellate Data/Error Files'
 csv_directory = '/Users/Andrew/Library/Mobile Documents/com~apple~CloudDocs/' \
                 'UVA/Summer 2020/Data/Appellate Data/Bias Paper Processed Data/stmCSV'
+=======
+json_directory = "C:\\Users\\Andrew\\Desktop\\Appellate Data\\Raw Data"
+csv_directory = "C:\\Users\\Andrew\\Desktop\\Appellate Data\\stmCSV"
+>>>>>>> Stashed changes
 
 # Create time variable to track runtime
 startTime = datetime.now()
@@ -57,8 +62,28 @@ ws.column_dimensions['I'].width = 45        # opinion text
 ws.column_dimensions['J'].width = 45        # concur / dissent text
 ws.column_dimensions['K'].width = 45        # corrected match line
 
+<<<<<<< Updated upstream
 # For CSV reading later, expand max size
 csv.field_size_limit(sys.maxsize)
+=======
+# Set up CSV file
+csv_file = open('Appellate Data ' + str(datetime.now().strftime("%d-%m-%Y %H-%M-%S")) + '.csv', 'w', newline='')
+csv_writer = csv.writer(csv_file)
+csv_writer.writerow(header_row)
+
+# For CSV reading later, expand max size
+# This is the quick and dirty approach for PC
+maxInt = sys.maxsize
+while True:
+
+    # decrease the maxInt value by factor 10
+    # as long as the OverflowError occurs.
+    try:
+        csv.field_size_limit(maxInt)
+        break
+    except OverflowError:
+        maxInt = int(maxInt/10)
+>>>>>>> Stashed changes
 
 
 # TODO: Get text of each case
@@ -67,7 +92,7 @@ def get_html(directory, circuit_folder, file, html_field):
 
     # Load file
     path = os.path.join(directory, circuit_folder, file)
-    with open(path) as json_file:
+    with open(path, encoding='utf-8') as json_file:
         try:
             data = json.load(json_file)
         except json.decoder.JSONDecodeError:
@@ -83,7 +108,7 @@ def get_html(directory, circuit_folder, file, html_field):
 def get_panel(csv_directory, csv_file, file):
 
     # Open csv
-    with open(os.path.join(csv_directory, csv_file)) as csv_file_object:
+    with open(os.path.join(csv_directory, csv_file), encoding='utf-8') as csv_file_object:
         csv_reader = csv.DictReader(csv_file_object)
 
         # Find row with file in csv
@@ -268,7 +293,7 @@ def get_authoring_judge_html(html, judge_list):
 def get_csv_text(csv_directory, csv_file, file):
 
     # Open csv
-    with open(os.path.join(csv_directory, csv_file)) as csv_file_object:
+    with open(os.path.join(csv_directory, csv_file), encoding='utf-8') as csv_file_object:
         csv_reader = csv.DictReader(csv_file_object)
 
         # Find row with file in csv
@@ -405,7 +430,7 @@ for circuit in os.listdir(json_directory):
     circuit_value = str(circuit.split('_')[1])
     circuit_folder = 'CA_' + circuit_value
     csv_file = 'ca' + circuit_value + 'DataForSTM.csv'
-    with open(os.path.join(csv_directory, csv_file)) as csv_file_object:
+    with open(os.path.join(csv_directory, csv_file), encoding='utf-8') as csv_file_object:
         csv_reader = csv.DictReader(csv_file_object)
 
         # Create list of files in csv
